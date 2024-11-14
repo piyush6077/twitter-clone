@@ -1,0 +1,4 @@
+jsonwebtoken  : For authentacitation
+bcrypt        : to hashpassword
+cookies-parser : so that we will be able to get cookies form the request 
+cloudinary     : so that we can upload all our imagesl                   l
