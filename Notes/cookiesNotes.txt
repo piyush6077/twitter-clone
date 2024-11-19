@@ -1,0 +1,138 @@
+cookies during Login / SignUp 
+
+******
+This code snippet generates a JSON Web Token (JWT), sets it as a cookie in the response, and explains the properties used to configure the cookie. 
+******
+
+
+const token = jwt.sign({userId},process.env.JWT_SECRET,{
+        expiresIn: '15d'
+    })
+    
+    res.cookie("jwt", token,{
+        maxAge: 15*24*60*60*1000,  // 15 days
+        httpOnly:true,    // prevent XSS attacks cross-site scripting attacks 
+        // basically means that this token cannot be accessed by javascript and something similar like that can be only accessed through http    
+        sameSite: "strict",  // CSRF attacks cross-site request forgery attacks
+        secure: false // secure gone be true if process.env.NODEENV is not development
+
+    })
+
+Here in the above CODE :
+
+we send 
+    res.cookies("jwt",token,{requirred information})
+
+    here we say jwt with the token a payload to the user local comp( my view)
+    generally means 
+        we say jwt to assign a secret code ( userId ) to each user created 
+
+
+****
+More Detail exp
+
+--------------
+
+const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: '15d',
+});
+
+
+**
+jwt.sign(payload, secret, options):
+
+
+-
+{ userId }: The payload is the data you want to encode in the JWT. In this case, it includes the userId, which identifies the user.
+
+-
+process.env.JWT_SECRET: This is a secret key used to sign the token, ensuring its authenticity. It is stored in an environment variable for security reasons.
+
+-
+{ expiresIn: '15d' }: Specifies that the token will expire after 15 days. After this period, the user will need to log in again to obtain a new token.
+
+
+
+----------------------------
+
+
+res.cookie("jwt", token, {
+    maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+    httpOnly: true,
+    sameSite: "strict",
+    secure: false,
+});
+
+
+**
+res.cookie("jwt", token):
+
+-
+Sets a cookie named jwt with the value of the generated token (token).
+
+
+**
+Cookie Configuration Options:
+
+-
+maxAge: 15 * 24 * 60 * 60 * 1000:
+
+Defines the lifespan of the cookie in milliseconds.
+15 * 24 * 60 * 60 * 1000 = 15 days in milliseconds.
+After this time, the cookie expires.
+
+-
+httpOnly: true:
+Ensures the cookie cannot be accessed via JavaScript in the browser (e.g., document.cookie).
+Helps mitigate XSS (Cross-Site Scripting) attacks by limiting access to cookies.
+
+-
+sameSite: "strict":
+Prevents the browser from sending the cookie along with cross-site requests.
+Helps protect against CSRF (Cross-Site Request Forgery) attacks.
+"strict": The cookie is only sent if the request is from the same site (no cross-origin).
+
+-
+secure: false:
+Ensures the cookie is only sent over secure HTTPS connections.
+Here, it's set to false for development environments. In production, it should be true to avoid sending cookies over unsecured HTTP.
+
+
+
+-------------********************************************************************-----------------------------------------
+
+LogOut 
+
+In the case of Logout :
+
+*****
+The logout function invalidates the JWT cookie to log the user out. Here's a detailed explanation:
+*****
+
+CODE :
+
+export const logout = (req, res) => {
+    try {
+        // Invalidate the JWT cookie
+        res.cookie("jwt", "", { maxAge: 0 });
+
+        // Send a success response
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        // Handle any errors
+        console.log(error);
+        return res.status(500).json({ error: "something went wrong" });
+    }
+};
+
+
+
+*****
+res.cookie("jwt", "", { maxAge: 0 }):
+
+--
+Purpose: This line sets the jwt cookie's value to an empty string ("") and its expiration (maxAge) to 0.
+-
+Result:
+The cookie is immediately expired in the user's browser.
+This effectively removes the token, preventing further authentication using the cookie.

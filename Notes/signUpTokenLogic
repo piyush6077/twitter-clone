@@ -1,0 +1,46 @@
+
+suppose there are 
+                    signUp
+                   / Login 
+user      ----------------------------->   Server 
+
+here the user wanted to signUp or Login 
+so he will send a " signUp request " to our Server 
+then we will create a token , encode it with the secretKey in the env 
+file and 
+This token will have some Payload in our case it is " userId " and then
+we are going to send this userId back to client in the cookies 
+
+user   <---------------------------------------  server
+                      cookie
+
+
+***
+
+
+                      SignUp
+     ----------------------------------------------->
+user                                                 server
+     <-----------------------------------------------
+                      Cookie
+
+
+
+
+And now that user has this token whenever user send this request 
+that could be something like " create a post " ,
+                             " delete a post " ,
+                             " update post " etc 
+
+Then they will send the """  jwt cookie in the request  """ ( as they have it in the  cookie )
+when the server get the jwt token it will decode it , see if the token is valid or not ,  if it expired or not if not 
+the server will check if it has the userId and if the jwt is right and there or no changes in it then allow the user to 
+change , update the profile etc 
+
+                        updateProfile
+                       /  deletePost
+            ----------------------------------->    
+user (jwt)                                          server (decode jwt)
+            <-----------------------------------
+                         Success
+                          error

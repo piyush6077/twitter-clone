@@ -1,0 +1,9 @@
+// const isPasswordCorrect = await bcrypt.compare(password , user?.password || "")
+
+here we dycrypt the passowrd from the database 
+by using the bcrypt package
+
+await bcrypt.compare( passwordProvidedByUser , databasePassword || "" )
+
+the ? and || are some type of ternary operator which if user.password not found then compare 
+the passwordProvidedByUser with the empty string in this way the bcrypt will not give errors 

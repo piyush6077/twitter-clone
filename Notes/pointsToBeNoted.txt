@@ -1,0 +1,45 @@
+
+//----------------- IN Model 
+
+followers:[
+        // follwoers are more than one so they are represented by array 
+        {
+            type: mongoose.Schema.Types.ObjectId , 
+        }
+    ]
+
+
+
+followers: []: This field is defined as an array, indicating that each document in the collection can have multiple followers stored in it.
+
+type: mongoose.Schema.Types.ObjectId:
+
+This specifies that each item in the followers array is an ObjectId type.
+ObjectId is a unique identifier typically used to reference documents in other collections. For example, a follower might be another user in the database.
+Purpose:
+
+This field can be used to create a relationship where each document (e.g., a user profile) can reference multiple other documents (e.g., other users who are followers) by their _id.
+In a social media application, this structure allows you to keep track of users who are following a particular user by storing their unique identifiers in the followers array.
+
+
+*********************************************************---------
+ HOW TO GENERATE A JWT TOKEN : 
+
+
+const newVar = jwt.sign({payload}, jwtsecret form env file , {
+
+})
+
+
+import jwt from 'jsonwebtoken'
+
+export const generateTokenAndSetCookies = (userId , res) => {
+    const token = jwt.sign({userId},process.env.JWT_SECRET,{
+        expireIn: '15d'
+    })
+}
+
+
+to generate jwt secreat value type in  "git bash" of terminal 
+
+ openssl rand -base64 32
