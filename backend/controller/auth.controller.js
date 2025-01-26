@@ -70,7 +70,7 @@ export const login =  async (req,res)=>{
         const isPasswordCorrect = await bcrypt.compare(password , user?.password || "")
         
         if(!user || !isPasswordCorrect){
-            res.status(400).json({error:"username or password is incorrect"})
+            return res.status(400).json({error:"username or password is incorrect"})
         }
 
         //if success then
@@ -108,9 +108,9 @@ export const logout =  (req,res)=>{
 export const getMe = async (req,res)=>{
     try {
         const user = await User.findById(req.user._id).select("-password");
-        res.status(200).json(user);
+        return res.status(200).json(user);
     } catch (error) {
         console.log("Error is getMe controller", error.message);
-        res.status(500).json({error:"Internal Server Error"})
+        return res.status(500).json({error:"Internal Server Error"})
     }
 }

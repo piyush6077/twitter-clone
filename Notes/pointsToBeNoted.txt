@@ -43,3 +43,34 @@ export const generateTokenAndSetCookies = (userId , res) => {
 to generate jwt secreat value type in  "git bash" of terminal 
 
  openssl rand -base64 32
+
+
+
+/// ------------------------------------------
+
+
+When we wanted to take a specific type of info from the user Frontend then we 
+usaually make a specific model for that specific type of info / details we should take 
+from the user 
+Such as HERE :
+we have 
+    user 
+    Notificicatin  models 
+
+where user take user info and we intergate it in our backend as :
+
+const newUser = new User({
+    username,
+    fullname,
+    email,
+    etc
+})
+
+and same for notification when we need a particular type of notification :
+
+const newNotification = new Notificicatin({
+    type: "follow",
+    from: "" , 
+    to: "" ,
+    etc,
+})

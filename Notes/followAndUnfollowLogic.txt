@@ -1,0 +1,24 @@
+suppose there are two user 
+
+john and jane 
+
+the id of john is 1
+the id of jane is 2 
+
+
+             
+        john                                    jane 
+
+    following[]                               following[]                                                   
+    follower[]                                follower[]
+
+
+when jane follow john the id of which is 2 will be added into the follower array of the john 
+and following array of the jane 
+    i.e john   follower[2]
+        jane   following[2]
+and vise versa 
+
+
+now similarly if jenny is the third person with the id 3 and now she follows john then the follower[] of the john will be :
+    i.e john  follower[2,3]
