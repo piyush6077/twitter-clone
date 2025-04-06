@@ -26,7 +26,6 @@ export const followUnfollowUser = async (req,res) => {
         if(!userToModify || !currentUser) return res.status(400).json({error: "user not found"})
 
         const isFollowing = currentUser.following.includes(id)  // this lines checks whelther the following array consist the current user (id) means checks if the current user is following the user 
-        
         if(isFollowing){
             // Unfollow the user 
             await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id}})  //pulling our id in user following array
