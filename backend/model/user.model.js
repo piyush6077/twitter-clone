@@ -51,7 +51,14 @@ const userSchema = new mongoose.Schema({
     link:{
         type:String,
         default:"",
-    }
+    },
+    likedPosts: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post",
+            default: []
+        }
+    ]
 },
 {
     timestamps:true
@@ -59,6 +66,6 @@ const userSchema = new mongoose.Schema({
 )
 //timestamps : true give us updated as time / date and created at field
 
-const user = mongoose.model("user" , userSchema);
+const User = mongoose.model("User" , userSchema);
 
-export default user;
+export default User;
