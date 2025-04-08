@@ -5,6 +5,7 @@ import dotenv from "dotenv"
 import connectMongoDB from "./db/connectMongoDB.js"
 import cookieParser from "cookie-parser";
 import postRoutes from "./routes/post.routes.js"
+import notificationRoutes from "./routes/notification.routes.js";
 dotenv.config()
 
 const app = express()
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes)
 app.use("/api/user" , userRoutes)
 app.use("/api/post", postRoutes)
+app.use("/api/notification", notificationRoutes)
 
 app.listen(PORT , ()=>{
     console.log("the server started at http://localhost:" + PORT)
