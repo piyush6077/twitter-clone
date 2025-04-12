@@ -147,7 +147,7 @@ export const commentOnPost = async(req , res) => {
 
 export const getAllPosts = async(req , res) => {
     try {
-        const userId = req.params.id
+        const userId = req.user._id 
         if(!userId){
             return res.status(400).json({success: false , message:"UnAuthenticated User"})
         }
@@ -168,7 +168,7 @@ export const getAllPosts = async(req , res) => {
             return res.status(200).json([])
         }
 
-        return res.status(400).json({data: allPosts})
+        return res.status(200).json({data: allPosts})
         
     } catch (error) {
         console.log(error)
