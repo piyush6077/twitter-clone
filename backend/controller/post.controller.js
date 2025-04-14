@@ -20,15 +20,16 @@ export const createPost = async(req , res) => {
             })
         } 
 
+        let imgUrl = img
         if(img){
-            const uploadResponse = await cloudinary.uploader.upload(img)
-            img = uploadResponse.secure_url
+            const uploadResponse = await cloudinary.uploader.upload(img),
+            imgUrl = uploadResponse.secure_url
         }
     
         const post = await Post.create({
             user: authUser,
             text,
-            img
+            img: imgUrl
         })
          
         return res.status(200).json({message:"Created Post" , post})
@@ -53,7 +54,7 @@ export const deletePost = async(req , res) => {
             return res.status(403).json({success:false , message: "Cannot delete another user Post"})
         }
     
-        if(img){
+        if(existingPost.img){
             const imgId = existingPost.img.split("/").pop().split(".")[0];
             await cloudinary.uploader.destroy(imgId);
         }

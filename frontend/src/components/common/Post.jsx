@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import LoadingSpinner from "./LoadingSpinner"
+// import avatar from "../../assets/avatar-placeholder.png"
 
 const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
@@ -18,8 +19,9 @@ const Post = ({ post }) => {
 	const { mutate: deletePost , isPending} = useMutation({
 		mutationFn: async() => {
 			try {
-				const res = await fetch(`/api/posts/${post._id}`, {
-					method: "DELETE"
+				const res = await fetch(`http://localhost:5000/api/post/${post._id}`, {
+					method: "DELETE",
+					credentials: "include"
 				})
 				const data = await res.json()
 				
@@ -62,7 +64,7 @@ const Post = ({ post }) => {
 			<div className='flex gap-2 items-start p-4 border-b border-gray-700'>
 				<div className='avatar'>
 					<Link to={`/profile/${postOwner.username}`} className='w-8 rounded-full overflow-hidden'>
-						<img src={postOwner.profileImg || "/avatar-placeholder.png"} />
+						<img src={postOwner.profileImg || "./avatar-placeholder.png"} />
 					</Link>
 				</div>
 				<div className='flex flex-col flex-1'>
