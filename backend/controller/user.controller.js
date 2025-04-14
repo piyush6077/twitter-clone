@@ -45,7 +45,7 @@ export const followUnfollowUser = async (req,res) => {
  
             await newNotification.save() // newNotification saved to Database
             // ToDO : return the id of user in the response 
-            res.status(200).json({message: "User followed successfully"})
+            res.status(200).json(currentUser)
         }
 
 
@@ -74,7 +74,7 @@ export const getSuggestedUsers = async (req,res) => {
 
         suggestedUser.forEach(users=>users.password=null)
 
-        res.status(200).json({suggestedUser})
+        res.status(200).json(suggestedUser)
     } catch (error) {
         console.log("Error occured " , error.message)
         res.status(400).json({error: error.message})       
