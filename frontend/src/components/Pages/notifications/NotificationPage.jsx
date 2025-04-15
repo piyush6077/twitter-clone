@@ -4,32 +4,66 @@ import LoadingSpinner from "../../common/LoadingSpinner";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaUser } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const NotificationPage = () => {
-	const isLoading = false;
-	const notifications = [
-		{
-			_id: "1",
-			from: {
-				_id: "1",
-				username: "johndoe",
-				profileImg: "/avatars/boy2.png",
-			},
-			type: "follow",
+
+	const queryClient = new QueryClient()
+
+	const {data: notifications , isLoading} = useQuery({
+		queryKey: ["notification"],
+		queryFn: async () => {
+			try {
+				const res = await fetch("http://localhost:5000/api/notification",{
+					credentials: "include"
+				})
+	
+				const data = await res.json()
+	
+				console.log(data)
+				if(!res.ok){
+					throw new Error(error.message || "something went wrong")
+				}
+	
+				return data.notification
+			} catch (error) {
+				throw new Error(error.message)
+			}
+		}
+	})
+
+	const {mutate: deleteAllNotifications} = useMutation({
+		mutationFn: async() => {
+			try {
+				const res = await fetch("http://localhost:5000/api/notification",{
+					method: "DELETE",
+					credentials: "include"
+				})
+				const data = await res.json()
+				console.log(data)
+				if(!res.ok){
+					throw new Error(error.message || "something went wrong")
+				}
+			
+				return data.notification
+			} catch (error) {
+				throw new Error(error.message)
+			}
 		},
-		{
-			_id: "2",
-			from: {
-				_id: "2",
-				username: "janedoe",
-				profileImg: "/avatars/girl1.png",
-			},
-			type: "like",
+		onSuccess: () => {
+			toast.success("Delete all notification successfully")
+			// queryClient.incalidateQueries('notification')
+			queryClient.invalidateQueries('notification')
 		},
-	];
+		onError: () => {
+			toast.error("Failed to delete Notifications")
+		}
+	})
 
 	const deleteNotifications = () => {
-		alert("All notifications deleted");
+		deleteAllNotifications()
+		// alert("All notifications deleted");
 	};
 
 	return (
