@@ -58,35 +58,6 @@ const ProfilePage = () => {
 
 	
 	const isMyProfile = authUser?._id === user?._id;
-	
-	const {mutate: updateProfile } = useMutation({
-		mutationFn: async() => {
-			try {
-				const res = await fetch(`/api/user/update`,{
-					method: "POST",
-					header:{
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({}),
-					credentials: "include"
-				})
-				const data = await res.json()
-	
-				console.log(data)
-				if(!res.ok) {
-					throw new Error(error.message || "Something went wrong")
-				}
-	
-				return data
-			} catch (error) {
-				throw new Error(error.message)
-			}
-		},
-		onSuccess: () => {
-			toast.success("Updated the post successfully")
-		}
-	})
-
 
 	useEffect(()=> {
 		refetch()
