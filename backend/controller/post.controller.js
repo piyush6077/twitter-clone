@@ -95,8 +95,8 @@ export const likeUnlikePost = async(req , res) => {
         } else {
             post.likes.push(userId);
             await User.updateOne(
-                {_id: postId},
-                {$push: {likedPosts: userId}}
+                {_id: userId},
+                {$push: {likedPosts: postId}}
             ) 
             await post.save()
     
@@ -183,24 +183,26 @@ export const getAllPosts = async(req , res) => {
 
 export const getLikedPosts = async(req, res) => {
     const userId = req.params.id
-    
+    console.log(userId)
     try {
         const user = await User.findById(userId)
         if(!user){
             return res.status(400).json({success: false , message:"UnAuthenticated User"})
         }
+        console.log(user)
         
         const likedPosts = await Post.find({_id: {$in: user.likedPosts}}).populate({
             path: "user",
             select: "-password"
         }).populate({
-            path:"comment.user",
+            path:"comments.user",
             select: "-password"
         })
 
-        return res.status(200).json({success: true , likedPosts})
+        return res.status(200).json({success: true , data:likedPosts})
     } catch (error) {
-        
+        console.log(error)
+        return res.status(500).json({success: true , message: "Internal server error"})       
     }
 }
 
@@ -250,7 +252,7 @@ export const getUserPosts = async(req, res) => {
                 select: "-password"
             });
 
-        return res.status(200).json({success:true , message:"Fetch user posts successfully" , posts })
+        return res.status(200).json({success:true , message:"Fetch user posts successfully" , data:posts })
     } catch (error) {
         console.log(error)
         return res.status(500).json({success: false , message:"internal server error"})

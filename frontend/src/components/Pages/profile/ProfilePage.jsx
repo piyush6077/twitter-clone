@@ -60,10 +60,15 @@ const ProfilePage = () => {
 		refetch()
 	},[username, refetch])
 
-	const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US",{
-		month: "short",
-		day: "2-digit"
-	}) 
+	const joinedDate = ()=> {
+		if(user){
+			const date = new Date(user.createdAt).toLocaleDateString("en-US",{
+				month: "short",
+				day: "2-digit"
+			}) 
+			return date
+		}
+	} 
 	
 
 	const handleImgChange = (e, state) => {
@@ -187,7 +192,7 @@ const ProfilePage = () => {
 									)}
 									<div className='flex gap-2 items-center'>
 										<IoCalendarOutline className='w-4 h-4 text-slate-500' />
-										<span className='text-sm text-slate-500'>{joinedDate}</span>
+										<span className='text-sm text-slate-500'>{joinedDate()}</span>
 									</div>
 								</div>
 								<div className='flex gap-2'>
@@ -224,7 +229,7 @@ const ProfilePage = () => {
 						</>
 					)}
 
-					<Posts />
+					<Posts feedType={feedType} username={username} userId={user?._id}/>
 				</div>
 			</div>
 		</>
