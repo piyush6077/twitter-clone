@@ -3,6 +3,7 @@ import { v2 as cloudinary} from 'cloudinary'
 import User from "../model/user.model.js";
 import Notification from "../model/notification.model.js";
 
+
 export const createPost = async(req , res) => {
     try {
         const { text , img } = req.body;
@@ -232,7 +233,6 @@ export const getFollowingPosts = async(req, res) => {
         return res.status(500).json({success: false , message:"internal server error"})
     }
 }
-
 
 export const getUserPosts = async(req, res) => {
     const { username } = req.params

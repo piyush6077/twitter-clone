@@ -13,6 +13,8 @@ import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import useFollow from "../../../Hook/useFollow";
+import LoadingSpinner from "../../common/LoadingSpinner";
 
 const ProfilePage = () => {
 	const [coverImg, setCoverImg] = useState(null);
@@ -23,9 +25,9 @@ const ProfilePage = () => {
 	const profileImgRef = useRef(null);
 
 	const {username} = useParams() 
-	// const isLoading = false;
-	const isMyProfile = true;
 
+	const {data: authUser, refetch: refetchAuthUser} = useQuery({queryKey: ["authUser"]})
+	
 	const {data: user , isLoading , refetch , isRefetching} = useQuery({
 		queryKey: ["userdetails"],
 		queryFn: async() => {
@@ -50,11 +52,41 @@ const ProfilePage = () => {
 		}
 	})
 
-	const {mutate} = useMutation({
-		mutationFn: async() => {
+	const {followed , isPending} = useFollow()
+	const amIFollowing = authUser?.following.includes(user?._id)
+	console.log(amIFollowing)
 
+	
+	const isMyProfile = authUser?._id === user?._id;
+	
+	const {mutate: updateProfile } = useMutation({
+		mutationFn: async() => {
+			try {
+				const res = await fetch(`/api/user/update`,{
+					method: "POST",
+					header:{
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({}),
+					credentials: "include"
+				})
+				const data = await res.json()
+	
+				console.log(data)
+				if(!res.ok) {
+					throw new Error(error.message || "Something went wrong")
+				}
+	
+				return data
+			} catch (error) {
+				throw new Error(error.message)
+			}
+		},
+		onSuccess: () => {
+			toast.success("Updated the post successfully")
 		}
 	})
+
 
 	useEffect(()=> {
 		refetch()
@@ -121,14 +153,14 @@ const ProfilePage = () => {
 								<input
 									type='file'
 									hidden
-                  accept="image/*"
+                 					accept="image/*"
 									ref={coverImgRef}
 									onChange={(e) => handleImgChange(e, "coverImg")}
 								/>
 								<input
 									type='file'
 									hidden
-                  accept="image/*"
+                  					accept="image/*"
 									ref={profileImgRef}
 									onChange={(e) => handleImgChange(e, "profileImg")}
 								/>
@@ -152,9 +184,15 @@ const ProfilePage = () => {
 								{!isMyProfile && (
 									<button
 										className='btn btn-outline rounded-full btn-sm'
-										onClick={() => alert("Followed successfully")}
-									>
-										Follow
+										onClick={() => {followed(user?._id,{
+											onSuccess: () => {
+												refetchAuthUser()
+											}
+										})}}
+									>   
+										{isPending && <LoadingSpinner size="sm"/>}
+										{!isPending && amIFollowing && "UnFollow"}
+										{!isPending && !amIFollowing && "Follow"}
 									</button>
 								)}
 								{(coverImg || profileImg) && (

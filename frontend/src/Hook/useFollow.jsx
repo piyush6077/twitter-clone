@@ -10,11 +10,12 @@ const useFollow = () => {
         mutationFn: async(userId) => {
             setFollowingId(userId)
 
-            const res = await fetch(`api/user/follow/${userId}`, {
+            const res = await fetch(`/api/user/follow/${userId}`, {
                 method: "POST"
             })
             const data = await res.json()
 
+            console.log(data)
             if(!res.ok){
                 throw new Error(error.message || "Something got wrong")
             }
@@ -25,7 +26,8 @@ const useFollow = () => {
             // So they can run at a same time
             Promise.all([
                 queryClient.invalidateQueries({queryKey: ['SuggestedUser']}),
-                queryClient.invalidateQueries({queryKey: ['authUser']})
+                queryClient.invalidateQueries({queryKey: ['authUser']}),
+                queryClient.invalidateQueries({queryKey: ['userDetails']})
             ])
         },
         onSettled: ()=>{
