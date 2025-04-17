@@ -11,7 +11,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import useFollow from "../../../Hook/useFollow";
 import LoadingSpinner from "../../common/LoadingSpinner";
@@ -26,6 +26,7 @@ const ProfilePage = () => {
 
 	const {username} = useParams() 
 
+	const queryClient = new QueryClient()
 	const {data: authUser, refetch: refetchAuthUser} = useQuery({queryKey: ["authUser"]})
 	
 	const {data: user , isLoading , refetch , isRefetching} = useQuery({
@@ -51,6 +52,41 @@ const ProfilePage = () => {
 			toast.success("Fetched user Profile")
 		}
 	})
+
+	const {mutate: updateImg, isLoading: isUploadingImg } = useMutation({
+				mutationFn: async() => {
+					try {
+						const res = await fetch(`http://localhost:5000/api/user/update`,{
+							method: "POST",
+							headers:{
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({profileImg , coverImg}),
+							credentials: "include"
+						})
+						const data = await res.json()
+			
+						console.log(data)
+						if(!res.ok) {
+							throw new Error(error.message || "Something went wrong")
+						}
+			
+						return data
+					} catch (error) {
+						throw new Error(error.message)
+					}
+				},
+				onSuccess: () => {
+					Promise.all([
+						queryClient.invalidateQueries({ queryKey: ["authUser"]}),
+						queryClient.invalidateQueries({ queryKey: ["userdetails"]})
+					])
+					toast.success("Updated the post successfully")
+				},
+				onError: ()=> {
+					toast.error(error.message)
+				}
+		})
 
 	const {followed , isPending} = useFollow()
 	const amIFollowing = authUser?.following.includes(user?._id)
@@ -169,9 +205,9 @@ const ProfilePage = () => {
 								{(coverImg || profileImg) && (
 									<button
 										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={() => alert("Profile updated successfully")}
+										onClick={() => updateImg()}
 									>
-										Update
+										{isUploadingImg ? <LoadingSpinner size="sm" /> : "Update"}
 									</button>
 								)}
 							</div>

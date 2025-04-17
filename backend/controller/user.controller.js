@@ -1,5 +1,7 @@
 import User from "../model/user.model.js"
 import Notification from "../model/notification.model.js";
+import bcrypt from "bcryptjs"
+import { v2 as cloudinary} from "cloudinary";
 
 export const getProfile = async (req , res) => {
     const {username} = req.params;
@@ -89,33 +91,66 @@ export const getSuggestedUsers = async (req,res) => {
         console.log("Error occured " , error.message)
         res.status(400).json({error: error.message})       
     }
-
-
 }
 
-export const updateUserProfile  = async (req,res)  => {
-    const { fullname , email , username , currentPassword , newPassword } = req.body // if a user wanted to update there profile they will provide us this field 
+export const updateUserProfile = async (req, res) => {
+    try {
+      const {
+        fullname,
+        email,
+        username,
+        bio,
+        link,
+        currentPassword,
+        newPassword,
+        profileImg,
+        coverImg
+      } = req.body;
+  
+      // Get user from DB
+      const user = await User.findById(req.user?._id);
+      if (!user) return res.status(404).json({ error: "User not found" });
+  
+      const updates = {};
+  
+        if (fullname) updates.fullname = fullname;
+        if (email) updates.email = email;
+        if (username) updates.username = username;
+        if (bio) updates.bio = bio;
+        if (link) updates.link = link;
     
-    if ( !fullname || !email || !username || !currentPassword || !newPassword){
-        return res.status(400).json("details are required")
-    }
-
-    const user = User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set: {
-                fullname: fullname,
-                email,
-                username,
-                currentPassword: newPassword
-            }
-        },
-        {
-            new:true
+        if (profileImg?.startsWith("data:image")) {
+            const uploadedProfileImg = await cloudinary.uploader.upload(profileImg);
+            updates.profileImg = uploadedProfileImg.secure_url;
         }
-    ).select("-password")
+      
+        if (coverImg?.startsWith("data:image")) {
+            const uploadedCoverImg = await cloudinary.uploader.upload(coverImg);
+            updates.coverImg = uploadedCoverImg.secure_url;
+        }
+      
 
-    return res
-    .status(200)
-    .json(user , "You Profile updated successfully")
-}
+      if (newPassword) {
+        // Validate current password first
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+          return res.status(401).json({ error: "Current password is incorrect" });
+        }
+  
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        updates.password = hashedPassword;
+      }
+  
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        { $set: updates },
+        { new: true }
+      ).select("-password");
+  
+      return res.status(200).json({ data: updatedUser });
+    } catch (error) {
+      console.error("Update profile error:", error.message);
+      return res.status(500).json({ error: "Something went wrong" });
+    }
+  };
